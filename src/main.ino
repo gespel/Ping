@@ -14,7 +14,9 @@
 const int BUFSIZE = 1024;
 uint16_t audioBuffer[BUFSIZE];
 int sampleRate = 48000;
-SawtoothSynth ss(55.0, sampleRate);
+//SawtoothSynth ss(55.0, sampleRate);
+Ping ping(sampleRate);
+int i = 0;
 
 void setup_i2n(int sampleRate, int bitDepth, int i2sChannel) {
     i2s_config_t i2s_config = {
@@ -45,27 +47,37 @@ void setup() {
     Serial.begin(19200);
     pinMode(18, OUTPUT);
     setup_i2n(sampleRate, 16, 0);
-    while(1) {
-        int16_t sample;
-        size_t bytes_written;
-        int x = 0;
-
-        for (int i = 0; i < BUFSIZE; i++) {
-            //double sample = sf.getSample();
-            double sample = ss.getSample();
-            //fp.setFreq(step->getSample()*55*ph.getPoti(0));
-            //sample *= 0.5;
-            audioBuffer[i] = sample;
-
-            
-            
-        }
-        
-        i2s_write((i2s_port_t)0, audioBuffer, sizeof(audioBuffer), &bytes_written, portMAX_DELAY);
-    }
+    pinMode(1, OUTPUT);
+    digitalWrite(1, HIGH);
 }
 
-void loop() {
-    
+bool ledToggle = false;
 
+void loop() {
+    int16_t sample;
+    size_t bytes_written;
+    if(i >= 200) {
+      ping.trigger();
+      i = 0;
+    }
+    
+    /*if(ledToggle) {
+      digitalWrite(2, HIGH);
+      ledToggle = false;
+    }
+    else {
+      digitalWrite(2, LOW);
+      ledToggle = true;
+    }*/
+
+    for (int i = 0; i < BUFSIZE; i++) {
+        //double sample = sf.getSample();
+        double sample = ping.getSample();
+        //fp.setFreq(step->getSample()*55*ph.getPoti(0));
+        //sample *= 0.5;
+        audioBuffer[i] = sample;
+    }
+    
+    i2s_write((i2s_port_t)0, audioBuffer, sizeof(audioBuffer), &bytes_written, portMAX_DELAY);
+    i++;
 }
