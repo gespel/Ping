@@ -4,17 +4,17 @@
 //#include <Arduino.h>
 #include <driver/i2s.h>
 #include <math.h>
-#include "GouodModulesLib/synths.h"
-#include "GouodModulesLib/stepsequencer.h"
-#include "GouodModulesLib/misc.h"
-#include "GouodModulesLib/instruments.h"
-#include "GouodModulesLib/handler.h"
-#include "GouodModulesLib/gios.h"
+#include "synths.h"
+#include "stepsequencer.h"
+#include "misc.h"
+#include "instruments.h"
+#include "handler.h"
+#include "gios.h"
 
 const int BUFSIZE = 1024;
 uint16_t audioBuffer[BUFSIZE];
 int sampleRate = 48000;
-SawtoothSynth ss(110.0, sampleRate);
+SawtoothSynth ss(55.0, sampleRate);
 
 void setup_i2n(int sampleRate, int bitDepth, int i2sChannel) {
     i2s_config_t i2s_config = {
@@ -40,7 +40,6 @@ void setup_i2n(int sampleRate, int bitDepth, int i2sChannel) {
     i2s_driver_install((i2s_port_t)i2sChannel, &i2s_config, 0, NULL);
     i2s_set_pin((i2s_port_t)i2sChannel, &pin_config);
 }
-
 
 void setup() {
     Serial.begin(19200);
